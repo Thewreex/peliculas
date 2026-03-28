@@ -5,7 +5,15 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  query,
+  collection,
+  getDocs,
+  where,
+} from "firebase/firestore";
 
 export const register = async (email, password, nombre) => {
   const userCredentials = await createUserWithEmailAndPassword(
@@ -19,6 +27,7 @@ export const register = async (email, password, nombre) => {
   await setDoc(doc(db, "usuarios", user.uid), {
     nombre: nombre,
     rol: "user",
+    email: email,
   });
 
   return user;
@@ -58,4 +67,10 @@ export const getUserProfile = async (uid) => {
   }
 
   return null;
+};
+
+export const checkEmailExists = async (email) => {
+  const q = query(collection(db, "usuarios"), where("email", "==", email));
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
 };
