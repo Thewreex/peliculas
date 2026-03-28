@@ -6,9 +6,20 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 
 const actoresCollection = collection(db, "actores");
+
+export const subscribeActores = (callback) => {
+  return onSnapshot(actoresCollection, (snapshot) => {
+    const actores = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(actores);
+  });
+};
 
 export const getActores = async () => {
   try {

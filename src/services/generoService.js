@@ -6,9 +6,20 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 
 const generosCollection = collection(db, "generos");
+
+export const subscribeGeneros = (callback) => {
+  return onSnapshot(generosCollection, (snapshot) => {
+    const generos = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(generos);
+  });
+};
 
 export const getGeneros = async () => {
   const snapshot = await getDocs(generosCollection);

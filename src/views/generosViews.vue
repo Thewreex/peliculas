@@ -28,11 +28,13 @@ import {
     getGeneros,
     createGenero,
     updateGenero,
-    deleteGenero
+    deleteGenero,
+    subscribeGeneros
 } from "@/services/generoService";
 import GenerosForm from "@/components/GenerosForm.vue";
 
 const generos = ref([])
+let unsubscribe;
 const generoSeleccionado = ref(null)
 const isEditing = ref(false)
 
@@ -44,7 +46,13 @@ const cargarGeneros = async () => {
     }
 }
 
-onMounted(cargarGeneros)
+onMounted(() => {
+    unsubscribe = subscribeGeneros((data) => {
+        generos.value = data
+    })
+
+    cargarGeneros()
+})
 
 const guardarGenero = async (genero) => {
     if (isEditing.value) {
@@ -56,7 +64,6 @@ const guardarGenero = async (genero) => {
     generoSeleccionado.value = null
     isEditing.value = false;
 
-    await cargarGeneros()
 }
 
 const editarGenero = (genero) => {
@@ -67,7 +74,6 @@ const editarGenero = (genero) => {
 const removeGenero = async (id) => {
     if (!confirm('¿Seguro/a que desea eliminar este genero?')) return
     await deleteGenero(id)
-    cargarGeneros()
 }
 </script>
 

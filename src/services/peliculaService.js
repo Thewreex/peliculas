@@ -6,9 +6,20 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 
 const peliculasCollection = collection(db, "peliculas");
+
+export const subscribePeliculas = (callback) => {
+  return onSnapshot(peliculasCollection, (snapshot) => {
+    const pelis = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(pelis);
+  });
+};
 
 export const getPeliculas = async () => {
   const snapshot = await getDocs(peliculasCollection);

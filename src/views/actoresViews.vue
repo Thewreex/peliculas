@@ -28,11 +28,13 @@ import {
     getActores,
     createActor,
     updateActor,
-    deleteActor
+    deleteActor,
+    subscribeActores
 } from "@/services/actorService";
 import ActorForm from "@/components/ActorForm.vue";
 
 const actores = ref([])
+let unsubscribe;
 const actorSeleccionado = ref(null)
 const isEditing = ref(false)
 
@@ -44,7 +46,12 @@ const cargarActores = async () => {
     }
 }
 
-onMounted(cargarActores)
+onMounted(() => {
+    unsubscribe = subscribeActores((data) => {
+        actores.value = data
+    })
+    cargarActores()
+})
 
 const guardarActor = async (actor) => {
     if (isEditing.value) {
@@ -56,7 +63,6 @@ const guardarActor = async (actor) => {
     actorSeleccionado.value = null
     isEditing.value = false;
 
-    await cargarActores()
 }
 
 const editarActor = (actor) => {
@@ -67,7 +73,6 @@ const editarActor = (actor) => {
 const removeActor = async (id) => {
     if (!confirm('¿Seguro/a que desea eliminar este actor/actriz?')) return
     await deleteActor(id)
-    cargarActores()
 }
 </script>
 
