@@ -4,9 +4,34 @@
     <PeliculasForm v-if="isAdmin" :pelicula="peliculaSeleccionada" :actores="actores" :generos="generos"
         @guardar="guardarPelicula" />
 
+    <div class="row my-5 g-3">
+        <div class="col-md-6">
+            <input type="text" class="form-control form-control-lg shadow-sm" placeholder="Buscar peliculas"
+                v-model="searchQuery">
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select form-select-lg shadow-sm" v-model="generoSeleccionado">
+                <option value="">Todos los generos</option>
+                <option v-for="genero in generos" :key="genero.id" :value="genero.id">
+                    {{ genero.nombre }}
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select form-select-lg shadow-sm" v-model="actorSeleccionado">
+                <option value="">Todos los actores</option>
+                <option v-for="actor in actores" :key="actor.id" :value="actor.id">
+                    {{ actor.nombre }}
+                </option>
+            </select>
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-md-3 mb-5" v-for="pelicula in peliculas" :key="pelicula.id">
-            <PeliculaCard :pelicula="pelicula" @edit="editPelicula" @delete="removePelicula" />
+        <div class="col-md-3 mb-5" v-for="pelicula in filtrarPeliculas" :key="pelicula.id">
+            <PeliculaCard :pelicula="pelicula" @edit="editPelicula" @delete="removePelicula"></PeliculaCard>
         </div>
     </div>
 </template>
@@ -29,6 +54,21 @@ const generos = ref([])
 
 const peliculaSeleccionada = ref(null)
 const isEditing = ref(false)
+
+const searchQuery = ref('')
+const generoSeleccionado = ref('')
+const actorSeleccionado = ref('')
+
+const filtrarPeliculas = computed(() => {
+
+    return peliculas.value.filter(pelicula => {
+        const matchesName = pelicula.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
+        const matchesGenero = !generoSeleccionado.value || pelicula.generos.includes(generoSeleccionado.value)
+        const matchesActor = !actorSeleccionado.value || pelicula.actores.includes(actorSeleccionado.value)
+
+        return matchesName && matchesGenero && matchesActor
+    })
+})
 
 const isAdmin = computed(() => store.state.rol === 'admin')
 
