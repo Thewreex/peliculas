@@ -5,6 +5,7 @@ import LoginView from "@/views/LoginView.vue";
 import PeliculasViews from "@/views/PeliculasViews.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import store from "@/store";
+import { getCurrentUser, getUserRol } from "@/services/authService";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -44,9 +45,14 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
-  const user = store.state.user;
-  const rol = store.state.rol;
+router.beforeEach(async (to) => {
+  const user = await getCurrentUser();
+  let rol = store.state.rol;
+
+  if (user && !rol) {
+    rol = await getUserRol(user.uid);
+    store.commit("setRol", rol);
+  }
 
   if (to.meta.requiresAuth && !user) {
     store.commit(
