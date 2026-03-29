@@ -29,9 +29,14 @@
         </div>
     </div>
 
+
     <div class="row">
-        <div class="col-md-3 mb-5" v-for="pelicula in filtrarPeliculas" :key="pelicula.id">
+        <div v-if="filtrarPeliculas.length > 0" class="col-md-3 mb-5" v-for="pelicula in filtrarPeliculas"
+            :key="pelicula.id">
             <PeliculaCard :pelicula="pelicula" @edit="editPelicula" @delete="removePelicula"></PeliculaCard>
+        </div>
+        <div v-else class="text-center my-5">
+            <h3 class="text-muted">No se encontraron películas con esos filtros 🍿</h3>
         </div>
     </div>
 </template>
