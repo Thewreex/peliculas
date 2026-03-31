@@ -32,17 +32,19 @@ import {
     subscribeActores
 } from "@/services/actorService";
 import ActorForm from "@/components/ActorForm.vue";
+import { useToast } from "vue-toastification";
 
 const actores = ref([])
 let unsubscribe;
 const actorSeleccionado = ref(null)
 const isEditing = ref(false)
+const toast = useToast()
 
 const cargarActores = async () => {
     try {
         actores.value = await getActores()
     } catch (error) {
-        console.error('Error al cargar los actores', error)
+        toast.error('Error al cargar los actores', error)
     }
 }
 
@@ -56,8 +58,10 @@ onMounted(() => {
 const guardarActor = async (actor) => {
     if (isEditing.value) {
         await updateActor(actorSeleccionado.value.id, actor)
+        toast.success("Se ha editado correctamente el actor")
     } else {
         createActor(actor)
+        toast.success("Se ha ingresado correctamente el actor")
     }
 
     actorSeleccionado.value = null
@@ -73,6 +77,8 @@ const editarActor = (actor) => {
 const removeActor = async (id) => {
     if (!confirm('¿Seguro/a que desea eliminar este actor/actriz?')) return
     await deleteActor(id)
+    toast.success("Se ha eliminado correctamente el actor")
+
 }
 </script>
 

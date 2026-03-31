@@ -32,17 +32,20 @@ import {
     subscribeGeneros
 } from "@/services/generoService";
 import GenerosForm from "@/components/GenerosForm.vue";
+import { useToast } from "vue-toastification";
 
 const generos = ref([])
 let unsubscribe;
 const generoSeleccionado = ref(null)
 const isEditing = ref(false)
 
+const toast = useToast()
+
 const cargarGeneros = async () => {
     try {
         generos.value = await getGeneros()
     } catch (error) {
-        console.error('Error al cargar los generos', error)
+        toast.error('Error al cargar los generos', error)
     }
 }
 
@@ -57,8 +60,10 @@ onMounted(() => {
 const guardarGenero = async (genero) => {
     if (isEditing.value) {
         await updateGenero(generoSeleccionado.value.id, genero)
+        toast.success("Genero actualizado correctamente")
     } else {
         createGenero(genero)
+        toast.success("Genero ingresado correctamente")
     }
 
     generoSeleccionado.value = null
@@ -74,6 +79,7 @@ const editarGenero = (genero) => {
 const removeGenero = async (id) => {
     if (!confirm('¿Seguro/a que desea eliminar este genero?')) return
     await deleteGenero(id)
+    toast.success("Genero eliminado correctamente")
 }
 </script>
 

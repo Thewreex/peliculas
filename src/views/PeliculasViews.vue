@@ -49,6 +49,7 @@ import { getActores } from '@/services/actorService';
 import { getGeneros } from '@/services/generoService';
 import PeliculasForm from '@/components/PeliculasForm.vue';
 import { useStore } from 'vuex';
+import { useToast } from 'vue-toastification';
 
 const store = useStore()
 
@@ -63,6 +64,8 @@ const isEditing = ref(false)
 const searchQuery = ref('')
 const generoSeleccionado = ref('')
 const actorSeleccionado = ref('')
+
+const toast = useToast()
 
 const filtrarPeliculas = computed(() => {
 
@@ -82,7 +85,7 @@ const cargarDatos = async () => {
         actores.value = await getActores()
         generos.value = await getGeneros()
     } catch (error) {
-        console.error('Error al cargar los datos: ', error)
+        toast.error("Error al cargar los datos: ", error)
     }
 }
 
@@ -100,8 +103,10 @@ onUnmounted(() => {
 const guardarPelicula = async (pelicula) => {
     if (isEditing.value) {
         await updatePelicula(peliculaSeleccionada.value.id, pelicula)
+        toast.success("Pelicula actualizada correctamente")
     } else {
         await createPelicula(pelicula)
+        toast.success("Se ha ingresado la pelicula correctamente")
     }
 
     peliculaSeleccionada.value = null
@@ -117,6 +122,7 @@ const editPelicula = (pelicula) => {
 const removePelicula = async (id) => {
     if (!confirm('¿Seguro/a que desea eliminar esta pelicula?')) return
     await deletePelicula(id)
+    toast.success("Pelicula eliminada correctamente")
 }
 
 </script>

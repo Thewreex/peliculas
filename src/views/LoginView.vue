@@ -22,12 +22,14 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { login, getUserRol, getUserProfile } from '@/services/authService';
 
 const store = useStore()
 const router = useRouter()
+const toast = useToast()
 
 const email = ref('')
 const password = ref('')
@@ -47,8 +49,10 @@ const iniciarSesion = async () => {
         store.commit('setUserProfile', profile)
 
         router.push('/peliculas')
+
+        toast.success(`Bienvenido: ${profile.nombre}`)
     } catch (error) {
-        alert(error.message)
+        toast.error("Vaya, algo salio mal: " + error.message)
     }
 }
 </script>

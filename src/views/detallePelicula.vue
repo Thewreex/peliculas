@@ -34,9 +34,11 @@ import { ref, onMounted } from 'vue';
 import { getPeliculas } from '@/services/peliculaService';
 import { getActores } from '@/services/actorService';
 import { getGeneros } from '@/services/generoService';
+import { useToast } from 'vue-toastification';
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 
 const volver = () => {
     router.back()
@@ -53,7 +55,7 @@ const cargarDatos = async () => {
         actores.value = await getActores()
         generos.value = await getGeneros()
     } catch (error) {
-        console.error('Error al cargar los datos: ', error)
+        toast.error('Error al cargar los datos: ', error)
     }
 }
 

@@ -40,9 +40,11 @@ import { useRouter } from 'vue-router';
 import { register, getUserRol, checkEmailExists } from '@/services/authService';
 import { helpers, required, email as emailValidator, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
+import { useToast } from 'vue-toastification';
 
 const store = useStore()
 const router = useRouter()
+const toast = useToast()
 
 const nombre = ref('')
 const email = ref('')
@@ -89,8 +91,9 @@ const registrar = async () => {
         router.push('/peliculas')
 
         v$.value.$reset()
+        toast.success("Se ha creado la cuenta exitosamente")
     } catch (error) {
-        alert(error.message)
+        toast.error("Ha ocurrido un error al crear la cuenta: ", error)
     }
 }
 </script>
