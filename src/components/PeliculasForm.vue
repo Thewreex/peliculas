@@ -75,6 +75,7 @@ const sinopsis = ref('')
 const actoresSeleccionados = ref([])
 const generosSeleccionados = ref([])
 
+
 const v$ = useVuelidate(rules, { nombre, year, poster, sinopsis })
 
 

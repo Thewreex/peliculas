@@ -9,6 +9,7 @@ import { firebaseApp } from "./firebase/firebase";
 import { auth } from "./firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserProfile } from "./services/authService";
+import { subscribeFavoritos } from "./services/favoritoService";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
@@ -36,6 +37,10 @@ onAuthStateChanged(auth, async (user) => {
     } else {
       store.commit("logout");
     }
+
+    subscribeFavoritos(user.uid, (favoritos) => {
+      store.commit("setFavoritos", favoritos);
+    });
   }
 });
 

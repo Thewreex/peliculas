@@ -8,6 +8,7 @@
         <div class="col-md-6">
             <input type="text" class="form-control form-control-lg shadow-sm" placeholder="Buscar peliculas"
                 v-model="searchQuery">
+            <button @click="toggleFavoritos" class="btn btn-white border border-3 w-100 mt-3">Mostrar favoritos</button>
         </div>
 
         <div class="col-md-3">
@@ -60,6 +61,7 @@ const generos = ref([])
 
 const peliculaSeleccionada = ref(null)
 const isEditing = ref(false)
+const mostrandoFavoritas = ref(false)
 
 const searchQuery = ref('')
 const generoSeleccionado = ref('')
@@ -67,14 +69,22 @@ const actorSeleccionado = ref('')
 
 const toast = useToast()
 
+
+const toggleFavoritos = async () => {
+    mostrandoFavoritas.value = !mostrandoFavoritas.value
+}
+
+
+
 const filtrarPeliculas = computed(() => {
 
     return peliculas.value.filter(pelicula => {
         const matchesName = pelicula.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
         const matchesGenero = !generoSeleccionado.value || pelicula.generos.includes(generoSeleccionado.value)
         const matchesActor = !actorSeleccionado.value || pelicula.actores.includes(actorSeleccionado.value)
+        const matchesFavorito = !mostrandoFavoritas.value || store.state.favoritosId.includes(pelicula.id)
 
-        return matchesName && matchesGenero && matchesActor
+        return matchesName && matchesGenero && matchesActor && matchesFavorito
     })
 })
 

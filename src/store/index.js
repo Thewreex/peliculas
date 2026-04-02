@@ -6,6 +6,8 @@ export default createStore({
     rol: null,
     userProfile: null,
     errorMessage: null,
+    favoritos: [],
+    favoritosId: [],
   },
   mutations: {
     setUser(state, user) {
@@ -26,6 +28,11 @@ export default createStore({
 
     setErrorMessage(state, message) {
       state.errorMessage = message;
+    },
+
+    setFavoritos(state, favoritos) {
+      state.favoritos = favoritos;
+      state.favoritosId = favoritos.map((f) => f.peliculaId);
     },
   },
 });

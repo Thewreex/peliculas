@@ -12,3 +12,8 @@ Modificaciones:
 - Creacion de la funcion getCurrentUser en authService para impedir que al refrescar dentro de la seccion generos o actores devuelva al usuario al login
 
 - Crear un sistema de filtrado que permita a los usuarios buscar peliculas por nombre, genero o actor
+
+- Implementar "Toast" para mostrar notificaciones
+
+- Nueva funcion para que los usuarios puedan marcar peliculas en sus favoritos, estos favoritos se guardaran en su
+  usuario
