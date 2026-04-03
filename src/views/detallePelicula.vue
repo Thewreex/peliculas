@@ -39,20 +39,81 @@
         <div class="text-center">
             <button @click="volver" class="btn btn-dark">Volver</button>
         </div>
+
+        <hr class="my-5">
+
+        <div class="row mt-5">
+            <div class="col-md-8 mx-auto">
+                <h3 class="mb-4 fw-bold">
+                    Opiniones de la comunidad ({{ resenas.length }})
+                </h3>
+
+                <div v-if="user" class="card shadow-sm mb-5 border-0 bg-light p-4">
+                    <h5 class="mb-3">Escribe tu opinion</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label d-block text-muted small uppercase">Calificacion</label>
+                        <div class="btn-group" role="group">
+                            <button v-for="n in 5" :key="n" type="button" class="btn btn-sm"
+                                :class="n <= calificacion ? 'btn-warning' : 'btn-outline-secondary'"
+                                @click="calificacion = n">⭐</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea class="form-control border-0" rows="3"
+                            placeholder="Escribe tu opinion acerca de esta pelicula" v-model="nuevaResena"></textarea>
+                    </div>
+
+                    <button @click="enviarResena" class="btn btn-primary px-4 float-end">Enviar Reseña</button>
+                </div>
+                <div v-else class="alert alert-info text-center py-4 mb-5">
+                    <p class="mb-2">Para dejar una reseña, primero debes iniciar sesion.</p>
+                    <router-link to="/login" class="btn btn-outline-primary btn-sm">Iniciar sesion</router-link>
+                </div>
+
+                <div v-if="resenas.length > 0" class="list-group list-group-flush shadow-sm rounder border">
+                    <div v-for="resena in resenas" :id="resena.id" class="list-group-item p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-primary">{{ resena.userName }}</strong>
+                            <span class="badge bg-warning text-dark">⭐ {{ resena.calificacion }} / 5</span>
+                        </div>
+
+                        <p class="mb-1 text-secondary italic">"{{ resena.comentario }}"</p>
+                        <small class="text-muted">{{ resena.fecha?.toDate().toLocaleDateString() }}</small>
+                    </div>
+                </div>
+
+                <div v-else class="text-center py-5">
+                    <p class="text-muted">Aun no hay opiniones. ¡Se el primero en comentar!</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { getPeliculas } from '@/services/peliculaService';
 import { getActores } from '@/services/actorService';
 import { getGeneros } from '@/services/generoService';
 import { useToast } from 'vue-toastification';
+import { useStore } from 'vuex';
+import { guardarResena, subscribeResenas } from '@/services/resenaService';
+import { onUnmounted } from 'vue';
 
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+const store = useStore()
+const user = computed(() => store.state.user)
+const userProfile = computed(() => store.state.userProfile)
+
+const nuevaResena = ref("")
+const calificacion = ref(5)
+const resenas = ref([])
+let unsubscribe
 
 const volver = () => {
     router.back()
@@ -73,7 +134,39 @@ const cargarDatos = async () => {
     }
 }
 
-onMounted(cargarDatos)
+onMounted(async () => {
+    await cargarDatos()
+
+    unsubscribe = subscribeResenas(route.params.id, (data) => {
+        resenas.value = data
+    })
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe();
+});
+
+const enviarResena = async () => {
+    if (nuevaResena.value.trim() === "") return
+
+    try {
+        await guardarResena({
+            peliculaId: route.params.id,
+            userId: user.value.uid,
+            userName: userProfile.value.nombre,
+            calificacion: calificacion.value,
+            comentario: nuevaResena.value
+        })
+
+        nuevaResena.value = ""
+        calificacion.value = 5
+        toast.success("¡Gracias por tu opinion!")
+    } catch (error) {
+        toast.error("Error al publicar la reseña: " + error.message)
+    }
+}
+
+
 
 const getNombreActores = () => {
     if (!pelicula.value.actores) return []
