@@ -19,6 +19,20 @@
                 </ul>
                 <h5 class="fw-bold">Sinopsis</h5>
                 <p>{{ pelicula.sinopsis }}</p>
+                <h5 class="fw-bold">Backdrop</h5>
+                <p>{{ pelicula.backdrop }}</p>
+                <h5 class="fw-bold">Budget</h5>
+                <p>{{ pelicula.budget }}</p>
+                <h5 class="fw-bold">Revenue</h5>
+                <p>{{ pelicula.revenue }}</p>
+                <h5 class="fw-bold">Runtime</h5>
+                <p>{{ pelicula.runtime }}</p>
+                <h5 class="fw-bold">Tagline</h5>
+                <p>{{ pelicula.tagline }}</p>
+                <h5 class="fw-bold">vote average</h5>
+                <p>{{ pelicula.vote_average }}</p>
+                <h5 class="fw-bold">vote_count</h5>
+                <p>{{ pelicula.vote_count }}</p>
 
             </div>
         </div>

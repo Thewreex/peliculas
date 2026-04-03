@@ -17,3 +17,5 @@ Modificaciones:
 
 - Nueva funcion para que los usuarios puedan marcar peliculas en sus favoritos, estos favoritos se guardaran en su
   usuario
+
+- Conexion con la api de TMDB para poder autocompletar automaticamente el formulario de ingreso, ademas se añadieron los campos: Backdrop, Budget, Revenue, Runtime, Tagline, Vote average, vote count
