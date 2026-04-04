@@ -148,6 +148,7 @@ const runtime = ref(0)
 const tagline = ref('')
 const budget = ref(0)
 const revenue = ref(0)
+const tmdbId = ref(null)
 
 const v$ = useVuelidate(rules, { nombre, year, poster, sinopsis, backdrop, vote_average, vote_count, tagline, budget, revenue })
 
@@ -196,6 +197,7 @@ const submitForm = async () => {
 
     emit('guardar', {
         nombre: nombre.value,
+        tmdbId: tmdbId.value,
         poster: poster.value,
         year: year.value,
         sinopsis: sinopsis.value,
@@ -243,6 +245,7 @@ const seleccionarPeliculaTMDB = async (id) => {
     tagline.value = p.tagline
     budget.value = p.budget
     revenue.value = p.revenue
+    tmdbId.value = id
 
     const idsGenerosMatched = []
     p.genres.forEach(gTMDB => {

@@ -19,3 +19,7 @@ Modificaciones:
   usuario
 
 - Conexion con la api de TMDB para poder autocompletar automaticamente el formulario de ingreso, ademas se añadieron los campos: Backdrop, Budget, Revenue, Runtime, Tagline, Vote average, vote count
+
+- Funcion para añadir comentarios en las peliculas"
+
+- Funcion para incluir los trailers en detalles de pelicula

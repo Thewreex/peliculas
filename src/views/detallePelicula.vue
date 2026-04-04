@@ -1,6 +1,15 @@
 <template>
     <div class="mb-5 pb-5" v-if="pelicula">
         <h2 class="text-center my-5 py-5 display-5 fw-bold">{{ pelicula.nombre }}</h2>
+        <div v-if="trailerKey" class="my-5">
+            <h5 class="fw-bold mb-3"> Trailer Oficial </h5>
+            <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden">
+                <iframe :src="'https://www.youtube.com/embed/' + trailerKey" title="Youtube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen=""></iframe>
+            </div>
+        </div>
         <div class="row justify-content-around me-5">
             <div class="col-5">
                 <img :src="pelicula.poster" :alt="pelicula.nombre" class="w-100">
@@ -94,6 +103,7 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
+import { obtenerTrailerTMDB } from '@/services/tmdbService';
 import { ref, onMounted, computed } from 'vue';
 import { getPeliculas } from '@/services/peliculaService';
 import { getActores } from '@/services/actorService';
@@ -111,6 +121,7 @@ const user = computed(() => store.state.user)
 const userProfile = computed(() => store.state.userProfile)
 
 const nuevaResena = ref("")
+const trailerKey = ref(null)
 const calificacion = ref(5)
 const resenas = ref([])
 let unsubscribe
@@ -129,6 +140,10 @@ const cargarDatos = async () => {
         pelicula.value = peliculas.find(p => p.id === route.params.id)
         actores.value = await getActores()
         generos.value = await getGeneros()
+
+        if (pelicula.value.tmdbId) {
+            trailerKey.value = await obtenerTrailerTMDB(pelicula.value.tmdbId)
+        }
     } catch (error) {
         toast.error('Error al cargar los datos: ', error)
     }

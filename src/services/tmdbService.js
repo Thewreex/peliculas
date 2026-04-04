@@ -29,3 +29,29 @@ export const obtenerDetallesTMDB = async (id) => {
     return null;
   }
 };
+
+export const obtenerTrailerTMDB = async (id) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}&language=es-MX`,
+    );
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      const responseEn = await fetch(
+        `${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}&language=en-US`,
+      );
+      const dataEn = await responseEn.json();
+      return dataEn.results?.find(
+        (v) => v.type === "Trailer" && v.site === "YouTube",
+      )?.key;
+    }
+
+    return data.results.find(
+      (v) => v.type === "Trailer" && v.site === "YouTube",
+    )?.key;
+  } catch (error) {
+    toast.error("Error obteniendo el trailer: ", error);
+    return null;
+  }
+};
