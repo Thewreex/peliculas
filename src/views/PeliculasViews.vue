@@ -1,43 +1,62 @@
 <template>
-    <h1 class="text-center my-5 fw-bold display-5">Peliculas!</h1>
+    <div v-if="cargando" class="container animate-pulse">
+        <h2 class="text-center my-5 py-5 placeholder-glow">
+            <span class="placeholder col-6 py-4 rounded"></span>
+        </h2>
 
-    <PeliculasForm v-if="isAdmin" :pelicula="peliculaSeleccionada" :actores="actores" :generos="generos"
-        @guardar="guardarPelicula" />
-
-    <div class="row my-5 g-3">
-        <div class="col-md-6">
-            <input type="text" class="form-control form-control-lg shadow-sm" placeholder="Buscar peliculas"
-                v-model="searchQuery">
-            <button @click="toggleFavoritos" class="btn btn-white border border-3 w-100 mt-3">Mostrar favoritos</button>
-        </div>
-
-        <div class="col-md-3">
-            <select class="form-select form-select-lg shadow-sm" v-model="generoSeleccionado">
-                <option value="">Todos los generos</option>
-                <option v-for="genero in generos" :key="genero.id" :value="genero.id">
-                    {{ genero.nombre }}
-                </option>
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <select class="form-select form-select-lg shadow-sm" v-model="actorSeleccionado">
-                <option value="">Todos los actores</option>
-                <option v-for="actor in actores" :key="actor.id" :value="actor.id">
-                    {{ actor.nombre }}
-                </option>
-            </select>
+        <div class="row">
+            <div v-for="n in 8" :key="n" class="col-md-3 mb-5">
+                <div class="placeholder rounded w-100" style="height: 600px;"></div>
+                <div class="placeholder-glow mt-3">
+                    <span class="placeholder col-8"></span>
+                    <span class="placeholder col-4"></span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <div v-else>
+        <h1 class="text-center my-5 fw-bold display-5">Peliculas!</h1>
 
-    <div class="row">
-        <div v-if="filtrarPeliculas.length > 0" class="col-md-3 mb-5" v-for="pelicula in filtrarPeliculas"
-            :key="pelicula.id">
-            <PeliculaCard :pelicula="pelicula" @edit="editPelicula" @delete="removePelicula"></PeliculaCard>
+        <PeliculasForm v-if="isAdmin" :pelicula="peliculaSeleccionada" :actores="actores" :generos="generos"
+            @guardar="guardarPelicula" />
+
+        <div class="row my-5 g-3">
+            <div class="col-md-6">
+                <input type="text" class="form-control form-control-lg shadow-sm" placeholder="Buscar peliculas"
+                    v-model="searchQuery">
+                <button @click="toggleFavoritos" class="btn btn-white border border-3 w-100 mt-3">Mostrar
+                    favoritos</button>
+            </div>
+
+            <div class="col-md-3">
+                <select class="form-select form-select-lg shadow-sm" v-model="generoSeleccionado">
+                    <option value="">Todos los generos</option>
+                    <option v-for="genero in generos" :key="genero.id" :value="genero.id">
+                        {{ genero.nombre }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select class="form-select form-select-lg shadow-sm" v-model="actorSeleccionado">
+                    <option value="">Todos los actores</option>
+                    <option v-for="actor in actores" :key="actor.id" :value="actor.id">
+                        {{ actor.nombre }}
+                    </option>
+                </select>
+            </div>
         </div>
-        <div v-else class="text-center my-5">
-            <h3 class="text-muted">No se encontraron películas con esos filtros 🍿</h3>
+
+
+        <div class="row">
+            <div v-if="filtrarPeliculas.length > 0" class="col-md-3 mb-5" v-for="pelicula in filtrarPeliculas"
+                :key="pelicula.id">
+                <PeliculaCard :pelicula="pelicula" @edit="editPelicula" @delete="removePelicula"></PeliculaCard>
+            </div>
+            <div v-else class="text-center my-5">
+                <h3 class="text-muted">No se encontraron películas con esos filtros 🍿</h3>
+            </div>
         </div>
     </div>
 </template>
@@ -69,6 +88,7 @@ const actorSeleccionado = ref('')
 
 const toast = useToast()
 
+const cargando = ref(true)
 
 const toggleFavoritos = async () => {
     mostrandoFavoritas.value = !mostrandoFavoritas.value
@@ -92,10 +112,13 @@ const isAdmin = computed(() => store.state.rol === 'admin')
 
 const cargarDatos = async () => {
     try {
+        cargando.value = true
         actores.value = await getActores()
         generos.value = await getGeneros()
     } catch (error) {
         toast.error("Error al cargar los datos: ", error)
+    } finally {
+        cargando.value = false
     }
 }
 

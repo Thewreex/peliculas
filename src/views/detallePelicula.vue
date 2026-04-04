@@ -1,5 +1,39 @@
 <template>
-    <div class="mb-5 pb-5" v-if="pelicula">
+    <div v-if="cargando" class="mb-5 pb-5 container animate-pulse">
+        <h2 class="text-center my-5 py-5 placeholder-glow">
+            <span class="placeholder col-6 py-4 rounded"></span>
+        </h2>
+
+        <div class="row justify-content-around">
+            <div class="col-md-5 placeholder-glow mb-4">
+                <div class="placeholder rounded w-100" style="height: 600px;"></div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="placeholder-glow">
+                    <p><span class="placeholder col-4 py-3"></span></p>
+                    <h5 class="placeholder col-3"></h5>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item border-0 p-0 mb-2" v-for="n in 3">
+                            <span class="placeholder col-8"></span>
+                        </li>
+                    </ul>
+
+                    <h5 class="placeholder col-2"></h5>
+                    <p><span class="placeholder col-12"></span>
+                        <br>
+                        <span class="placeholder col-10"></span>
+                        <br>
+                        <span class="placeholder col-11"></span>
+                    </p>
+
+                    <h5 class="placeholder col-3 mt-4"></h5>
+                    <div class="placeholder rounded w-100" style="height: 150px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-5 pb-5" v-else-if="pelicula">
         <h2 class="text-center my-5 py-5 display-5 fw-bold">{{ pelicula.nombre }}</h2>
         <div v-if="trailerKey" class="my-5">
             <h5 class="fw-bold mb-3"> Trailer Oficial </h5>
@@ -134,8 +168,11 @@ const pelicula = ref(null)
 const actores = ref([])
 const generos = ref([])
 
+const cargando = ref(true)
+
 const cargarDatos = async () => {
     try {
+        cargando.value = true
         const peliculas = await getPeliculas()
         pelicula.value = peliculas.find(p => p.id === route.params.id)
         actores.value = await getActores()
@@ -146,6 +183,8 @@ const cargarDatos = async () => {
         }
     } catch (error) {
         toast.error('Error al cargar los datos: ', error)
+    } finally {
+        cargando.value = false
     }
 }
 

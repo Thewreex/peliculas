@@ -23,3 +23,5 @@ Modificaciones:
 - Funcion para añadir comentarios en las peliculas"
 
 - Funcion para incluir los trailers en detalles de pelicula
+
+- Implementacion de skeletons en las secciones de peliculas
