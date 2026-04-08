@@ -30,7 +30,7 @@
             </div>
 
             <div class="col-md-3">
-                <select class="form-select form-select-lg shadow-sm" v-model="generoSeleccionado">
+                <select class="form-select form-select-lg shadow-sm" multiple v-model="generoSeleccionado">
                     <option value="">Todos los generos</option>
                     <option v-for="genero in generos" :key="genero.id" :value="genero.id">
                         {{ genero.nombre }}
@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-md-3">
-                <select class="form-select form-select-lg shadow-sm" v-model="actorSeleccionado">
+                <select class="form-select form-select-lg shadow-sm" multiple="" v-model="actorSeleccionado">
                     <option value="">Todos los actores</option>
                     <option v-for="actor in actores" :key="actor.id" :value="actor.id">
                         {{ actor.nombre }}
@@ -101,8 +101,8 @@ const filtrarPeliculas = computed(() => {
 
     return peliculas.value.filter(pelicula => {
         const matchesName = pelicula.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
-        const matchesGenero = !generoSeleccionado.value || pelicula.generos.includes(generoSeleccionado.value)
-        const matchesActor = !actorSeleccionado.value || pelicula.actores.includes(actorSeleccionado.value)
+        const matchesGenero = !generoSeleccionado.value || generoSeleccionado.value.every(g => pelicula.generos.includes(g))
+        const matchesActor = !actorSeleccionado.value || actorSeleccionado.value.every(a => pelicula.actores.includes(a))
         const matchesFavorito = !mostrandoFavoritas.value || store.state.favoritosId.includes(pelicula.id)
 
         return matchesName && matchesGenero && matchesActor && matchesFavorito
