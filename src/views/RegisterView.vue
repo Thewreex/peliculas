@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-content-center my-5 pt-5">
+    <div v-if="!cargando" class="row justify-content-center my-5 pt-5">
         <div class="col-4 border rounded p-5 shadow">
             <h2 class="text-center mb-5">Formulario de registro</h2>
             <form @submit.prevent="registrar">
@@ -11,7 +11,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-control" :class="{ 'is-invalid': v$.email.$error }" v-model="email">
+                    <input type="text" class="form-control" :class="{ 'is-invalid': v$.email.$error }" v-model="email">
                     <div class="invalid-feedback" v-if="v$.email.required.$invalid">El correo es obligatorio</div>
                     <div class="invalid-feedback" v-if="v$.email.email.$invalid">Ingrese un formato de correo valido
                     </div>
@@ -31,6 +31,9 @@
             </form>
         </div>
     </div>
+    <div v-else class="d-flex min-vh-100 justify-content-center align-items-center">
+        <Spinner />
+    </div>
 </template>
 
 <script setup>
@@ -41,6 +44,8 @@ import { register, getUserRol, checkEmailExists } from '@/services/authService';
 import { helpers, required, email as emailValidator, minLength } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+import Spinner from '@/components/Spinner.vue';
+import { convertirErrores } from '@/utils/errorMessages';
 
 const store = useStore()
 const router = useRouter()
@@ -49,6 +54,8 @@ const toast = useToast()
 const nombre = ref('')
 const email = ref('')
 const password = ref('')
+
+const cargando = ref(false)
 
 
 const isUniqueEmail = async (value) => {
@@ -75,6 +82,7 @@ const v$ = useVuelidate(rules, { nombre, email, password })
 
 
 const registrar = async () => {
+    cargando.value = true
     try {
         const result = await v$.value.$validate()
 
@@ -93,7 +101,9 @@ const registrar = async () => {
         v$.value.$reset()
         toast.success("Se ha creado la cuenta exitosamente")
     } catch (error) {
-        toast.error("Ha ocurrido un error al crear la cuenta: ", error)
+        toast.error("Ha ocurrido un error al crear la cuenta: " + convertirErrores(error.code))
+    } finally {
+        cargando.value = false
     }
 }
 </script>

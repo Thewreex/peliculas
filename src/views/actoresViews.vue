@@ -33,6 +33,7 @@ import {
 } from "@/services/actorService";
 import ActorForm from "@/components/ActorForm.vue";
 import { useToast } from "vue-toastification";
+import { convertirErrores } from "@/utils/errorMessages";
 
 const actores = ref([])
 let unsubscribe;
@@ -44,7 +45,7 @@ const cargarActores = async () => {
     try {
         actores.value = await getActores()
     } catch (error) {
-        toast.error('Error al cargar los actores', error)
+        toast.error('Error al cargar los actores' + convertirErrores(error.code))
     }
 }
 

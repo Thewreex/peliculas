@@ -8,6 +8,10 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
+import { convertirErrores } from "@/utils/errorMessages";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const actoresCollection = collection(db, "actores");
 
@@ -30,7 +34,10 @@ export const getActores = async () => {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Ha ocurrido un error al cargar los actores: ", error);
+    toast.error(
+      "Ha ocurrido un error al cargar los actores: " +
+        convertirErrores(error.code),
+    );
   }
 };
 

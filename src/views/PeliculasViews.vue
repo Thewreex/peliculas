@@ -70,6 +70,7 @@ import { getGeneros } from '@/services/generoService';
 import PeliculasForm from '@/components/PeliculasForm.vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
+import { convertirErrores } from '@/utils/errorMessages';
 
 const store = useStore()
 
@@ -116,7 +117,7 @@ const cargarDatos = async () => {
         actores.value = await getActores()
         generos.value = await getGeneros()
     } catch (error) {
-        toast.error("Error al cargar los datos: ", error)
+        toast.error("Error al cargar los datos: " + convertirErrores(error.code))
     } finally {
         cargando.value = false
     }

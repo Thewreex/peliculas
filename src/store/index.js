@@ -23,7 +23,11 @@ export default createStore({
     },
 
     logout(state) {
-      ((state.user = null), (state.rol = null), (state.userProfile = null));
+      ((state.user = null),
+        (state.rol = null),
+        (state.userProfile = null),
+        (state.favoritos = []),
+        (state.favoritosId = []));
     },
 
     setErrorMessage(state, message) {

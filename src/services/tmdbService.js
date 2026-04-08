@@ -1,6 +1,7 @@
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 import { useToast } from "vue-toastification";
+import { convertirErrores } from "@/utils/errorMessages";
 
 const toast = useToast();
 
@@ -14,7 +15,7 @@ export const buscarPeliculasTMDB = async (query) => {
     const data = await response.json();
     return data.results;
   } catch (error) {
-    toast.error("Error buscando la pelicula: ", error);
+    toast.error("Error buscando la pelicula: " + convertirErrores(error.code));
   }
 };
 
@@ -25,7 +26,9 @@ export const obtenerDetallesTMDB = async (id) => {
     );
     return await response.json();
   } catch (error) {
-    toast.error("Error obteniendo detalles de TMDB: ", error);
+    toast.error(
+      "Error obteniendo detalles de TMDB: " + convertirErrores(error.code),
+    );
     return null;
   }
 };
@@ -51,7 +54,7 @@ export const obtenerTrailerTMDB = async (id) => {
       (v) => v.type === "Trailer" && v.site === "YouTube",
     )?.key;
   } catch (error) {
-    toast.error("Error obteniendo el trailer: ", error);
+    toast.error("Error obteniendo el trailer: " + convertirErrores(error.code));
     return null;
   }
 };

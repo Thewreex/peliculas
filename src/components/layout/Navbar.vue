@@ -44,9 +44,11 @@ const nombre = computed(() => {
 })
 
 const cerrarSesion = async () => {
+    if (!confirm('¿Seguro/a que desea cerrar sesion?')) return
     await logout()
     store.commit('logout')
 }
+
 
 
 </script>

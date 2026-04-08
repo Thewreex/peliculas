@@ -146,6 +146,7 @@ import { useToast } from 'vue-toastification';
 import { useStore } from 'vuex';
 import { guardarResena, subscribeResenas } from '@/services/resenaService';
 import { onUnmounted } from 'vue';
+import { convertirErrores } from '@/utils/errorMessages';
 
 const route = useRoute()
 const router = useRouter()
@@ -182,7 +183,7 @@ const cargarDatos = async () => {
             trailerKey.value = await obtenerTrailerTMDB(pelicula.value.tmdbId)
         }
     } catch (error) {
-        toast.error('Error al cargar los datos: ', error)
+        toast.error('Error al cargar los datos: ' + convertirErrores(error.code))
     } finally {
         cargando.value = false
     }
@@ -216,7 +217,7 @@ const enviarResena = async () => {
         calificacion.value = 5
         toast.success("¡Gracias por tu opinion!")
     } catch (error) {
-        toast.error("Error al publicar la reseña: " + error.message)
+        toast.error("Error al publicar la reseña: " + convertirErrores(error.code))
     }
 }
 

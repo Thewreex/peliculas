@@ -33,6 +33,7 @@ import {
 } from "@/services/generoService";
 import GenerosForm from "@/components/GenerosForm.vue";
 import { useToast } from "vue-toastification";
+import { convertirErrores } from "@/utils/errorMessages";
 
 const generos = ref([])
 let unsubscribe;
@@ -45,7 +46,7 @@ const cargarGeneros = async () => {
     try {
         generos.value = await getGeneros()
     } catch (error) {
-        toast.error('Error al cargar los generos', error)
+        toast.error('Error al cargar los generos' + convertirErrores(error.code))
     }
 }
 
