@@ -1,3 +1,4 @@
+import { obtenerDetallesTMDB } from "@/services/tmdbService";
 import { createStore } from "vuex";
 
 export default createStore({
@@ -8,10 +9,15 @@ export default createStore({
     errorMessage: null,
     favoritos: [],
     favoritosId: [],
+    peliculaSeleccionada: null,
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+
+    setPelicula(state, pelicula) {
+      state.peliculaSeleccionada = pelicula;
     },
 
     setRol(state, rol) {

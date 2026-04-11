@@ -52,7 +52,7 @@
                 <p class="mb-5 fs-1"><strong>Año estreno {{ pelicula.year }}</strong></p>
                 <h5 class="fw-bold">Full Cast</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="actor in getNombreActores()" :key="actor"> {{ actor }}</li>
+                    <li class="list-group-item" v-for="actor in actores" :key="actor.id"> {{ actor.nombre }}</li>
                 </ul>
                 <h5 class="fw-bold">Generos</h5>
                 <ul class="list-group list-group-flush">

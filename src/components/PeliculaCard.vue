@@ -15,7 +15,8 @@
         </div>
         <div class="d-flex justify-content-center gap-2 card-footer">
             <router-link :to="`/peliculas/${pelicula.id}`" class="btn btn-sm btn-info">Detalles</router-link>
-            <button v-if="isAdmin" @click="emit('edit', pelicula)" class="btn btn-sm btn-primary">Editar</button>
+            <button v-if="isAdmin" data-bs-dismiss="modal" @click="enviarEdit"
+                class="btn btn-sm btn-primary">Editar</button>
             <button v-if="isAdmin" @click="emit('delete', pelicula.id)" class="btn btn-sm btn-danger">Eliminar</button>
             <!-- Corazón de favorito -->
             <button @click="toggleFavorito" class="btn btn-sm"
@@ -40,7 +41,11 @@ const props = defineProps({
     pelicula: Object
 })
 
-const emit = defineEmits(['edit', 'delete'])
+const enviarEdit = () => {
+    store.commit("setPelicula", props.pelicula)
+}
+
+const emit = defineEmits(['delete'])
 
 const isAdmin = computed(() => store.state.rol === 'admin')
 

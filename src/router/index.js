@@ -7,6 +7,7 @@ import RegisterView from "@/views/RegisterView.vue";
 import store from "@/store";
 import { getCurrentUser, getUserRol } from "@/services/authService";
 import { createRouter, createWebHistory } from "vue-router";
+import FormularioViews from "@/views/formularioViews.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
     {
       path: "/generos",
       component: GenerosViews,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/ingreso",
+      component: FormularioViews,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {

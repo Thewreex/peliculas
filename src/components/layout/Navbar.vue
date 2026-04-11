@@ -11,6 +11,7 @@
                     <router-link class="nav-link active" to="/peliculas">Peliculas </router-link>
                     <router-link class="nav-link active" to="/actores">Actores </router-link>
                     <router-link class="nav-link active" to="/generos">Generos </router-link>
+                    <router-link class="nav-link active" to="/ingreso">Ingresar</router-link>
                     <template v-if="!user">
                         <div class="navbar-nav ms-auto">
                             <router-link class="nav-link" to="/register">Registrarse</router-link>

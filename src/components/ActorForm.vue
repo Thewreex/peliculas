@@ -40,6 +40,7 @@ const resetForm = () => {
     nombre.value = ""
 }
 
+
 const submitForm = async () => {
     const result = await v$.value.$validate()
 
