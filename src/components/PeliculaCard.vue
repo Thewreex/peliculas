@@ -31,11 +31,13 @@
 <script setup>
 
 import { computed } from 'vue';
-import { useStore } from 'vuex';
 import { addFavorito, removeFavorito } from '@/services/favoritoService';
 import { useToast } from 'vue-toastification';
+import { useLoginStore } from '@/stores/loginStore';
+import { useMoviesStore } from '@/stores/moviesStore';
 
-const store = useStore()
+const loginStore = useLoginStore()
+const moviesStore = useMoviesStore()
 const toast = useToast()
 const props = defineProps({
     pelicula: Object
@@ -47,14 +49,14 @@ const enviarEdit = () => {
 
 const emit = defineEmits(['delete'])
 
-const isAdmin = computed(() => store.state.rol === 'admin')
+const isAdmin = computed(() => loginStore.role === 'admin')
 
 const isFavorito = computed(() => {
-    return store.state.favoritosId.includes(props.pelicula.id)
+    return moviesStore.favoritesId.includes(props.pelicula.id)
 })
 
 const toggleFavorito = async () => {
-    const user = store.state.user
+    const user = loginStore.user
 
     if (!user) {
         toast.warning("¡Debes iniciar sesion para marcar favoritos!")
@@ -62,7 +64,7 @@ const toggleFavorito = async () => {
     }
 
     if (isFavorito.value) {
-        const favorito = store.state.favoritos.find(f => f.peliculaId === props.pelicula.id)
+        const favorito = moviesStore.favorites.find(f => f.peliculaId === props.pelicula.id)
 
         if (favorito) await removeFavorito(favorito.id)
     } else {

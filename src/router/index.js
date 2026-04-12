@@ -4,7 +4,7 @@ import GenerosViews from "@/views/generosViews.vue";
 import LoginView from "@/views/LoginView.vue";
 import PeliculasViews from "@/views/PeliculasViews.vue";
 import RegisterView from "@/views/RegisterView.vue";
-import store from "@/store";
+import { useLoginStore } from "@/stores/loginStore";
 import { getCurrentUser, getUserRol } from "@/services/authService";
 import { createRouter, createWebHistory } from "vue-router";
 import FormularioViews from "@/views/formularioViews.vue";
@@ -41,7 +41,7 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
-      path: "/register",
+      path: "/registrar",
       component: RegisterView,
     },
     {
@@ -52,27 +52,24 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+  const loginStore = useLoginStore();
   const user = await getCurrentUser();
-  let rol = store.state.rol;
+  let rol = loginStore.role;
 
   if (user && !rol) {
     rol = await getUserRol(user.uid);
-    store.commit("setRol", rol);
+    loginStore.setRole(rol);
   }
 
   if (to.meta.requiresAuth && !user) {
-    store.commit(
-      "setErrorMessage",
+    loginStore.setErrorMessage(
       "Debes estar logeado para acceder a esta pagina",
     );
     return "/login";
   }
 
   if (to.meta.requiresAdmin && rol !== "admin") {
-    store.commit(
-      "setErrorMessage",
-      "No tienes autorizacion para ver esta pagina",
-    );
+    loginStore.setErrorMessage("No tienes autorizacion para ver esta pagina");
     return "/peliculas";
   }
 });

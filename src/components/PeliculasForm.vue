@@ -221,8 +221,10 @@ import ActorForm from './ActorForm.vue';
 import ActoresViews from '@/views/actoresViews.vue';
 import GenerosViews from '@/views/generosViews.vue';
 import PeliculasViews from '@/views/PeliculasViews.vue';
-import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
+import { useMoviesStore } from '@/stores/moviesStore';
+
+const moviesStore = useMoviesStore()
 
 const anioActual = new Date().getFullYear()
 
@@ -251,7 +253,6 @@ const props = defineProps({
 
 const emit = defineEmits(['guardar'])
 
-const store = useStore()
 const toast = useToast()
 
 const nombre = ref('')
@@ -274,7 +275,7 @@ const seleccionIngreso = ref("")
 const v$ = useVuelidate(rules, { nombre, year, poster, sinopsis, backdrop, vote_average, vote_count, tagline, budget, revenue, runtime, actores: actoresSeleccionados, generos: generosSeleccionados })
 
 
-watch(() => store.state.peliculaSeleccionada, (nuevaPelicula) => {
+watch(() => moviesStore.selectedMovie, (nuevaPelicula) => {
     if (nuevaPelicula) {
         nombre.value = nuevaPelicula.nombre
         poster.value = nuevaPelicula.poster
@@ -312,7 +313,7 @@ const resetForm = () => {
 
 const cancelarEdit = () => {
     resetForm()
-    store.commit('setPelicula', null)
+    moviesStore.setMovie(null)
 }
 
 
@@ -340,7 +341,8 @@ const submitForm = async () => {
 
     const peliExistente = props.peliculas?.find(p => p.nombre.toLowerCase() === peliculaSubmit.nombre.toLowerCase() && p.year === peliculaSubmit.year)
 
-    const editandoId = store.state.peliculaSeleccionada?.id
+    const editandoId = moviesStore.selectedMovie?.id
+
 
     if (peliExistente && peliExistente.id !== editandoId) {
         toast.error("La pelicula que estas ingresando ya existe en la base de datos")

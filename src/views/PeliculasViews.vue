@@ -63,11 +63,11 @@ import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
 import { getPeliculas, createPelicula, updatePelicula, deletePelicula, subscribePeliculas } from '@/services/peliculaService';
 import { getActores } from '@/services/actorService';
 import { getGeneros } from '@/services/generoService';
-import { useStore } from 'vuex';
+import { useMoviesStore } from '@/stores/moviesStore';
 import { useToast } from 'vue-toastification';
 import { convertirErrores } from '@/utils/errorMessages';
 
-const store = useStore()
+const moviesStore = useMoviesStore()
 
 const peliculas = ref([])
 let unsubscribe;
@@ -104,7 +104,7 @@ const filtrarPeliculas = computed(() => {
         const matchesName = pelicula.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
         const matchesGenero = !generoSeleccionado.value || generoSeleccionado.value.every(g => pelicula.generos.includes(g))
         const matchesActor = !actorSeleccionado.value || actorSeleccionado.value.every(a => pelicula.actores.includes(a))
-        const matchesFavorito = !mostrandoFavoritas.value || store.state.favoritosId.includes(pelicula.id)
+        const matchesFavorito = !mostrandoFavoritas.value || moviesStore.favoritesId.includes(pelicula.id)
 
         return matchesName && matchesGenero && matchesActor && matchesFavorito
     })

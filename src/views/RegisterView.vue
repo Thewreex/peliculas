@@ -38,7 +38,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { register, getUserRol, checkEmailExists } from '@/services/authService';
 import { helpers, required, email as emailValidator, minLength } from '@vuelidate/validators';
@@ -46,8 +45,9 @@ import useVuelidate from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 import Spinner from '@/components/Spinner.vue';
 import { convertirErrores } from '@/utils/errorMessages';
+import { useLoginStore } from '@/stores/loginStore';
 
-const store = useStore()
+const loginStore = useLoginStore()
 const router = useRouter()
 const toast = useToast()
 
@@ -90,11 +90,11 @@ const registrar = async () => {
 
         const user = await register(email.value, password.value, nombre.value)
 
-        store.commit('setUser', user)
+        loginStore.setUser(user)
 
         const rol = await getUserRol(user.uid)
 
-        store.commit('setRol', rol)
+        loginStore.setRole(rol)
 
         router.push('/peliculas')
 

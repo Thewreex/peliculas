@@ -15,11 +15,11 @@
 import Footer from './components/layout/Footer.vue';
 import Navbar from './components/layout/Navbar.vue';
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useLoginStore } from './stores/loginStore';
+import { storeToRefs } from 'pinia';
 
-const store = useStore()
-
-const errorMessage = computed(() => store.state.errorMessage)
+const loginStore = useLoginStore()
+const errorMessage = computed(() => loginStore.errorMessage)
 
 </script>
 

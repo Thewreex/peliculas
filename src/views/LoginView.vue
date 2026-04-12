@@ -14,7 +14,7 @@
                 <button class="btn btn-primary w-100">Iniciar sesion</button>
             </form>
             <div class="text-center">
-                <router-link to="/register" class="mt-3">Registrarse</router-link>
+                <router-link to="/registrar" class="mt-3">Registrarse</router-link>
             </div>
         </div>
     </div>
@@ -26,13 +26,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useStore } from 'vuex';
+import { useLoginStore } from '@/stores/loginStore';
 import { useRouter } from 'vue-router';
 import { login, getUserRol, getUserProfile } from '@/services/authService';
 import Spinner from '@/components/Spinner.vue';
 import { convertirErrores } from '@/utils/errorMessages';
 
-const store = useStore()
+const loginStore = useLoginStore()
 const router = useRouter()
 const toast = useToast()
 const cargando = ref(false)
@@ -45,15 +45,15 @@ const iniciarSesion = async () => {
     try {
         const user = await login(email.value, password.value)
 
-        store.commit('setUser', user)
+        loginStore.setUser(user)
 
         const rol = await getUserRol(user.uid)
 
-        store.commit('setRol', rol)
+        loginStore.setRole(rol)
 
         const profile = await getUserProfile(user.uid)
 
-        store.commit('setUserProfile', profile)
+        loginStore.setUserProfile(profile)
 
         router.push('/peliculas')
 

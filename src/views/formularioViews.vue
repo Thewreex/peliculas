@@ -12,17 +12,17 @@ import { subscribeGeneros } from '@/services/generoService';
 import { ref, onMounted, onUnmounted, computed } from "vue"
 import { useToast } from 'vue-toastification';
 import { convertirErrores } from '@/utils/errorMessages';
-import { useStore } from 'vuex';
+import { useMoviesStore } from '@/stores/moviesStore';
 
 const toast = useToast()
-const store = useStore()
+const moviesStore = useMoviesStore()
 
 const actores = ref([])
 const generos = ref([])
 
 const peliculas = ref([])
 
-const peliculaSeleccionada = computed(() => store.state.peliculaSeleccionada)
+const peliculaSeleccionada = computed(() => moviesStore.selectedMovie)
 const isEditing = computed(() => !!peliculaSeleccionada.value)
 
 const guardarPelicula = async (pelicula) => {
@@ -33,10 +33,9 @@ const guardarPelicula = async (pelicula) => {
         await createPelicula(pelicula)
         toast.success("Se ha ingresado la pelicula correctamente")
     }
-
-    store.commit("setPelicula", null)
-
+    moviesStore.setMovie(null)
 }
+
 
 const obtenerPeliculas = async () => {
     return await getPeliculas()

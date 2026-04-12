@@ -52,12 +52,13 @@
                 <p class="mb-5 fs-1"><strong>Año estreno {{ pelicula.year }}</strong></p>
                 <h5 class="fw-bold">Full Cast</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="actor in actores" :key="actor.id"> {{ actor.nombre }}</li>
+                    <li class="list-group-item" v-for="actor in actoresFiltrados" :key="actor.id"> {{ actor.nombre }}
+                    </li>
                 </ul>
                 <h5 class="fw-bold">Generos</h5>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        <p v-for="genero in getNombreGeneros()" :key="genero"> {{ genero }}</p>
+                        <p v-for="genero in generosFiltrados" :key="genero.id"> {{ genero.nombre }}</p>
                     </li>
                 </ul>
                 <h5 class="fw-bold">Sinopsis</h5>
@@ -143,7 +144,7 @@ import { getPeliculas } from '@/services/peliculaService';
 import { getActores } from '@/services/actorService';
 import { getGeneros } from '@/services/generoService';
 import { useToast } from 'vue-toastification';
-import { useStore } from 'vuex';
+import { useLoginStore } from '@/stores/loginStore';
 import { guardarResena, subscribeResenas } from '@/services/resenaService';
 import { onUnmounted } from 'vue';
 import { convertirErrores } from '@/utils/errorMessages';
@@ -151,9 +152,9 @@ import { convertirErrores } from '@/utils/errorMessages';
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-const store = useStore()
-const user = computed(() => store.state.user)
-const userProfile = computed(() => store.state.userProfile)
+const loginStore = useLoginStore()
+const user = computed(() => loginStore.user)
+const userProfile = computed(() => loginStore.userProfile)
 
 const nuevaResena = ref("")
 const trailerKey = ref(null)
@@ -189,12 +190,18 @@ const cargarDatos = async () => {
     }
 }
 
+const actoresFiltrados = ref([])
+const generosFiltrados = ref([])
+
 onMounted(async () => {
     await cargarDatos()
 
     unsubscribe = subscribeResenas(route.params.id, (data) => {
         resenas.value = data
     })
+
+    actoresFiltrados.value = actores.value.filter(actor => pelicula.value.actores.includes(actor.id)) || []
+    generosFiltrados.value = generos.value.filter(genero => pelicula.value.generos.includes(genero.id)) || []
 })
 
 onUnmounted(() => {
@@ -222,22 +229,6 @@ const enviarResena = async () => {
 }
 
 
-
-const getNombreActores = () => {
-    if (!pelicula.value.actores) return []
-
-    return actores.value
-        .filter(actor => pelicula.value.actores.includes(actor.id))
-        .map(actor => actor.nombre)
-}
-
-const getNombreGeneros = () => {
-    if (!pelicula.value.generos) return []
-
-    return generos.value
-        .filter(genero => pelicula.value.generos.includes(genero.id))
-        .map(genero => genero.nombre)
-}
 </script>
 
 <style scoped></style>

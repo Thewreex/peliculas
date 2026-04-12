@@ -1,27 +1,36 @@
+<!-- NAVBAR PAGE -->
+
 <template>
     <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Peliculas</a>
+            <a class="navbar-brand" href="#">Películas</a>
+
+            <!-- HAMBURGER MENU MODE FOR MOBILE DEVICES -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- LINK MENU FOR NAVIGATING BETWEEN DIFFERENT ROUTES -->
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ms-auto">
-                    <router-link class="nav-link active" to="/peliculas">Peliculas </router-link>
-                    <router-link class="nav-link active" to="/actores">Actores </router-link>
-                    <router-link class="nav-link active" to="/generos">Generos </router-link>
+                    <router-link class="nav-link active" to="/peliculas">Películas</router-link>
+                    <router-link class="nav-link active" to="/actores">Actores</router-link>
+                    <router-link class="nav-link active" to="/generos">Géneros</router-link>
                     <router-link class="nav-link active" to="/ingreso">Ingresar</router-link>
+
+                    <!-- No User links -->
                     <template v-if="!user">
                         <div class="navbar-nav ms-auto">
-                            <router-link class="nav-link" to="/register">Registrarse</router-link>
+                            <router-link class="nav-link" to="/registrar">Registrarse</router-link>
                             <router-link class="nav-link" to="/login">Login</router-link>
                         </div>
                     </template>
 
+                    <!-- With user links -->
                     <template v-else>
-                        <span class="nav-link me-3">Bienvenido: {{ nombre }}</span>
-                        <button @click="cerrarSesion" class="btn btn-outline-light">Cerrar Sesion</button>
+                        <span class="nav-link me-3">Bienvenido: {{ name }}</span>
+                        <button @click="logOut" class="btn btn-outline-light">Cerrar sesión</button>
                     </template>
                 </div>
             </div>
@@ -30,28 +39,31 @@
 </template>
 
 <script setup>
+// VUE LIBRARIES
 import { computed } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { useLoginStore } from '@/stores/loginStore';
+// SERVICES
 import { logout } from '@/services/authService';
 
-const store = useStore()
-const router = useRouter()
 
-const user = computed(() => store.state.user)
-
-const nombre = computed(() => {
-    return store.state.userProfile?.nombre || ''
+// VARIABLES
+const loginStore = useLoginStore()
+const user = computed(() => loginStore.user)
+const name = computed(() => {
+    return loginStore.userProfile?.nombre || ''
 })
 
-const cerrarSesion = async () => {
-    if (!confirm('¿Seguro/a que desea cerrar sesion?')) return
+//METHODS
+
+/** 
+ * Metodo que confirma si es que el usuario quiere cerrar sesion
+ * De ser asi, llama al metodo logout
+*/
+const logOut = async () => {
+    if (!confirm('¿Está seguro de que desea cerrar sesión?')) return
     await logout()
-    store.commit('logout')
+    loginStore.logout()
 }
-
-
-
 </script>
 
 <style scoped></style>

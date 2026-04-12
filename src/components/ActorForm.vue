@@ -3,8 +3,11 @@
         <div class="mb-3">
             <label class="form-label">Nombre</label>
             <input type="text" class="form-control" :class="{ 'is-invalid': v$.nombre.$error }" v-model="nombre">
-            <div class="invalid-feedback" v-if="v$.nombre.$error">
-                El nombre es obligatorio y debe tener al menos 4 caracteres
+            <div class="invalid-feedback" v-if="v$.nombre.required.$invalid">
+                Ingrese un nombre
+            </div>
+            <div class="invalid-feedback" v-if="v$.nombre.minLength.$invalid">
+                El nombre debe de ser de al menos {{ v$.nombre.minLength.$params.min }} caracteres.
             </div>
         </div>
         <button class="btn btn-primary">Guardar</button>
