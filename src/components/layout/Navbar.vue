@@ -41,6 +41,7 @@
 <script setup>
 // VUE LIBRARIES
 import { computed } from 'vue';
+// STORE
 import { useLoginStore } from '@/stores/loginStore';
 // SERVICES
 import { logout } from '@/services/authService';
@@ -50,14 +51,14 @@ import { logout } from '@/services/authService';
 const loginStore = useLoginStore()
 const user = computed(() => loginStore.user)
 const name = computed(() => {
-    return loginStore.userProfile?.nombre || ''
+    return loginStore.userProfile?.name || ''
 })
 
 //METHODS
 
 /** 
- * Metodo que confirma si es que el usuario quiere cerrar sesion
- * De ser asi, llama al metodo logout
+ * Method that confirms whether the user wants to log out
+ * If so, it calls the logout method
 */
 const logOut = async () => {
     if (!confirm('¿Está seguro de que desea cerrar sesión?')) return

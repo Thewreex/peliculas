@@ -8,7 +8,7 @@ import { firebaseApp } from "./firebase/firebase";
 import { auth } from "./firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserProfile } from "./services/authService";
-import { subscribeFavoritos } from "./services/favoritoService";
+import { subscribeFavorites } from "./services/favoriteService";
 import { createPinia } from "pinia";
 
 import { useLoginStore } from "./stores/loginStore";
@@ -40,13 +40,13 @@ onAuthStateChanged(auth, async (user) => {
 
     if (profile) {
       loginStore.setUserProfile(profile);
-      loginStore.setRole(profile.rol);
+      loginStore.setRole(profile.role);
     } else {
       loginStore.logout();
     }
 
-    subscribeFavoritos(user.uid, (favoritos) => {
-      moviesStore.setFavorites(favoritos);
+    subscribeFavorites(user.uid, (favorites) => {
+      moviesStore.setFavorites(favorites);
     });
   }
 });

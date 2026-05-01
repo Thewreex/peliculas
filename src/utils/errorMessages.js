@@ -1,6 +1,6 @@
-// src/utils/errorMessages.js
-export function convertirErrores(error) {
-  const mensajes = {
+// Function to convert Firebase error messages into more user-friendly text
+export function convertErrors(error) {
+  const messages = {
     "auth/email-already-in-use": "El email ya se encuentra en uso.",
     "auth/invalid-email": "El formato del email es inválido.",
     "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
@@ -15,5 +15,5 @@ export function convertirErrores(error) {
     "resource-exhausted": "Se agotó la cuota de Firebase.",
   };
 
-  return mensajes[error] ?? error;
+  return messages[error] ?? error;
 }

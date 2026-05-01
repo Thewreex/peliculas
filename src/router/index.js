@@ -1,14 +1,19 @@
-import ActoresViews from "@/views/actoresViews.vue";
-import DetallePelicula from "@/views/detallePelicula.vue";
-import GenerosViews from "@/views/generosViews.vue";
+// Views
+import ActorsView from "@/views/ActorsView.vue";
+import MovieDetail from "@/views/MovieDetail.vue";
+import GenresView from "@/views/GenresView.vue";
 import LoginView from "@/views/LoginView.vue";
-import PeliculasViews from "@/views/PeliculasViews.vue";
+import MoviesView from "@/views/MoviesView.vue";
 import RegisterView from "@/views/RegisterView.vue";
+import FormView from "@/views/FormView.vue";
+// Stores
 import { useLoginStore } from "@/stores/loginStore";
-import { getCurrentUser, getUserRol } from "@/services/authService";
+// Services
+import { getCurrentUser, getUserRole } from "@/services/authService";
+// Router
 import { createRouter, createWebHistory } from "vue-router";
-import FormularioViews from "@/views/formularioViews.vue";
 
+// Routes
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -18,26 +23,26 @@ const router = createRouter({
     },
     {
       path: "/peliculas",
-      component: PeliculasViews,
+      component: MoviesView,
     },
     {
       path: "/peliculas/:id",
-      component: DetallePelicula,
+      component: MovieDetail,
       meta: { requiresAuth: true },
     },
     {
       path: "/actores",
-      component: ActoresViews,
+      component: ActorsView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: "/generos",
-      component: GenerosViews,
+      component: GenresView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: "/ingreso",
-      component: FormularioViews,
+      component: FormView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
@@ -51,25 +56,33 @@ const router = createRouter({
   ],
 });
 
+/**
+
+* Navigation guard to restrict access to routes based on user roles
+* Retrieves user data from the store and the database
+* If the role is not found in the store, it fetches it from the database
+* If a user does not meet the required role to access a page, they will be redirected with an error message
+  */
+
 router.beforeEach(async (to) => {
   const loginStore = useLoginStore();
   const user = await getCurrentUser();
   let rol = loginStore.role;
 
   if (user && !rol) {
-    rol = await getUserRol(user.uid);
+    rol = await getUserRole(user.uid);
     loginStore.setRole(rol);
   }
 
   if (to.meta.requiresAuth && !user) {
     loginStore.setErrorMessage(
-      "Debes estar logeado para acceder a esta pagina",
+      "Debes estar logueado para acceder a esta página.",
     );
     return "/login";
   }
 
   if (to.meta.requiresAdmin && rol !== "admin") {
-    loginStore.setErrorMessage("No tienes autorizacion para ver esta pagina");
+    loginStore.setErrorMessage("No tienes autorización para ver esta página.");
     return "/peliculas";
   }
 });

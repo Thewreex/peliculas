@@ -1,3 +1,7 @@
+<!-- Epic Spinners - source: https://epic-spinners.vuestic.dev/
+Developed by Epicmax: https://epicmax.co/
+Designed by Vasili Savitski: https://github.com/xxsavitski -->
+
 <template>
     <div class="half-circle-spinner">
         <div class="circle circle-1"></div>

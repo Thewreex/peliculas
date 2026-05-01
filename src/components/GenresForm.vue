@@ -1,5 +1,6 @@
-<!-- ActorForm component
-This component is the form where actors can be created/updated -->
+<!-- genresForm component
+This component is the form where genres can be created/updated -->
+
 <template>
     <form @submit.prevent="submitForm" class="mb-5">
         <div class="mb-3">
@@ -19,62 +20,64 @@ This component is the form where actors can be created/updated -->
 <script setup>
 // VUE Libraries
 import { ref, watch } from 'vue';
-import useVuelidate from '@vuelidate/core';
+import { useVuelidate } from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
 
-
-
 // PROPS
+
 const props = defineProps({
-    actor: Object
+    genre: Object
 })
 
-// EMITS (from actorsView)
+// EMITS (from genresView)
 
 const emit = defineEmits(['save'])
 
 // REFS
+
 const name = ref('')
 
 // Vuelidate
+
 const rules = {
-    name: { required, minLength: minLength(4) }
+    name: { required, minLength: minLength(3) }
 }
+
 const v$ = useVuelidate(rules, { name })
 
-
 // METHODS
+
 
 /**
 
 * Method used to submit the form data
 * Checks whether the value exists and meets the Vuelidate requirements
-* If valid: uses the save emit defined in actorsView, and resets the form
+* If valid: uses the save emit defined in genresView, and resets the form
 * If not valid, returns null
 */
-
 const submitForm = async () => {
     const result = await v$.value.$validate()
 
     if (!result) return
+
 
     emit('save', {
         name: name.value
     })
 
     name.value = ""
+
     v$.value.$reset()
 }
 
 // WATCHERS
 
-// Watch used to assign the actor prop value after it loads
-watch(() => props.actor, (newActor) => {
-    if (newActor) {
-        name.value = newActor.name
+// Watch used to assign the genre prop value after it loads
+watch(() => props.genre, (newGenre) => {
+    if (newGenre) {
+        name.value = newGenre.name
     }
 })
-
 </script>
 
 <style scoped></style>
