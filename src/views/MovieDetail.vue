@@ -58,6 +58,10 @@
       </div>
     </div>
 
+    <div v-else class="p-5 mb-5 containter d-flex justify-content-center align-items-center">
+      <h1>==== TRAILER NO DISPONIBLE ====</h1>
+    </div>
+
     <div class="row justify-content-around me-5">
       <!-- Movie Poster -->
       <div class="col-5">
@@ -89,8 +93,11 @@
         <p>{{ movie.synopsis }}</p>
 
         <!-- Movie Backdrop -->
-        <h5 class="fw-bold">Imagen de fondo</h5>
-        <p>{{ movie.backdrop }}</p>
+        <div v-if="movie.backdrop">
+          <h5 class="fw-bold">Imagen de fondo</h5>
+          <img :src="movie.backdrop" :alt="movie.name">
+        </div>
+
 
         <!-- Movie Budget -->
         <h5 class="fw-bold">Presupuesto (USD)</h5>
@@ -165,7 +172,8 @@
           <p class="mb-2">
             Para dejar una reseña, primero debes iniciar sesión.
           </p>
-          <router-link to="/login" class="btn btn-outline-primary btn-sm">Iniciar sesión</router-link>
+          <router-link to="/login" class="btn btn-outline-primary btn-sm">Iniciar
+            sesión</router-link>
         </div>
 
         <!-- User opinions section -->
@@ -275,6 +283,7 @@ onUnmounted(() => {
 const returning = () => {
   router.back();
 };
+
 
 /**
 * Method to load all data for the selected movie to view its details

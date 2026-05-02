@@ -12,6 +12,8 @@ import { useLoginStore } from "@/stores/loginStore";
 import { getCurrentUser, getUserRole } from "@/services/authService";
 // Router
 import { createRouter, createWebHistory } from "vue-router";
+// Toast
+import { useToast } from "vue-toastification";
 
 // Routes
 const router = createRouter({
@@ -28,7 +30,6 @@ const router = createRouter({
     {
       path: "/peliculas/:id",
       component: MovieDetail,
-      meta: { requiresAuth: true },
     },
     {
       path: "/actores",
@@ -67,6 +68,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const loginStore = useLoginStore();
   const user = await getCurrentUser();
+  const toast = useToast();
   let rol = loginStore.role;
 
   if (user && !rol) {
@@ -75,14 +77,12 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresAuth && !user) {
-    loginStore.setErrorMessage(
-      "Debes estar logueado para acceder a esta página.",
-    );
+    toast.warning("Debes estar logueado para acceder a esta página");
     return "/login";
   }
 
   if (to.meta.requiresAdmin && rol !== "admin") {
-    loginStore.setErrorMessage("No tienes autorización para ver esta página.");
+    toast.warning("No tienes autorización para ver esta página.");
     return "/peliculas";
   }
 });

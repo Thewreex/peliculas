@@ -64,8 +64,11 @@ It also includes buttons that display the forms for adding actors and genres -->
     </div>
 
     <!-- Button to edit movies -->
-    <button class="mb-5 btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">Modificar
-        películas</button>
+    <div class="d-flex gap-4 mb-4">
+        <button class=" btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">Modificar
+            películas</button>
+        <button class="btn btn-danger" @click="resetForm">Limpiar</button>
+    </div>
     <form @submit.prevent="submitForm" class="mb-5">
 
         <!-- NAME FIELD -->
@@ -329,6 +332,7 @@ watch(() => moviesStore.selectedMovie, (newMovie) => {
 // Clear all form values
 
 const resetForm = () => {
+    tmdbId.value = 0
     name.value = ""
     poster.value = ""
     year.value = ""

@@ -9,7 +9,6 @@ export const useLoginStore = defineStore("login", {
     user: null,
     role: null,
     userProfile: null,
-    errorMessage: null,
   }),
   // Methods
   actions: {
@@ -24,10 +23,6 @@ export const useLoginStore = defineStore("login", {
 
     setUserProfile(userProfile) {
       this.userProfile = userProfile;
-    },
-
-    setErrorMessage(errorMessage) {
-      this.errorMessage = errorMessage;
     },
 
     /**
