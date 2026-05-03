@@ -148,7 +148,7 @@
           <div class="mb-3">
             <label class="form-label d-block text-muted small uppercase">Calificación</label>
             <div class="btn-group" role="group">
-              <button v-for="n in 5" :key="n" type="button" class="btn btn-sm" :class="n <= rating ? 'btn-warning' : 'btn-outline-secondary'
+              <button v-for="n in 10" :key="n" type="button" class="btn btn-sm" :class="n <= rating ? 'btn-warning' : 'btn-outline-secondary'
                 " @click="rating = n">
                 ⭐
               </button>
@@ -172,22 +172,40 @@
           <p class="mb-2">
             Para dejar una reseña, primero debes iniciar sesión.
           </p>
-          <router-link to="/login" class="btn btn-outline-primary btn-sm">Iniciar
+          <router-link :to="`/login?redirect=/peliculas/${movie.id}`" class="btn btn-outline-primary btn-sm">Iniciar
             sesión</router-link>
         </div>
 
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-sm" :class="activeFilter === 'newToOld' ? 'btn-primary' : 'btn-outline-secondary'"
+            @click="activeFilter = 'newToOld'">Mas recientes</button>
+          <button class="btn btn-sm" :class="activeFilter === 'oldToNew' ? 'btn-primary' : 'btn-outline-secondary'"
+            @click="activeFilter = 'oldToNew'">Mas antiguas</button>
+          <button class="btn btn-sm" :class="activeFilter === 'likes' ? 'btn-primary' : 'btn-outline-secondary'"
+            @click="activeFilter = 'likes'">Mas likes</button>
+        </div>
+
         <!-- User opinions section -->
-        <div v-if="reviews.length > 0" class="list-group list-group-flush shadow-sm rounder border">
-          <div v-for="review in reviews" :id="review.id" class="list-group-item p-4">
+        <div v-if="sortedReviews.length > 0" class="list-group list-group-flush shadow-sm rounder border">
+          <div v-for="review in sortedReviews" :id="review.id" class="list-group-item p-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <strong class="text-primary">{{ review.userName }}</strong>
-              <span class="badge bg-warning text-dark">⭐ {{ review.rating }} / 5</span>
+              <span class="badge bg-warning text-dark">⭐ {{ review.rating }} / 10</span>
             </div>
 
             <p class="mb-1 text-secondary italic">"{{ review.comment }}"</p>
-            <small class="text-muted">{{
-              review.date?.toDate().toLocaleDateString()
-            }}</small>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">{{
+                review.date?.toDate().toLocaleDateString()
+              }}</small>
+              <div class="d-flex gap-2">
+                <p>{{ review.likesCount }}</p>
+                <button v-if="user" @click="toggleLike(review.id)" class="btn btn-primary btn-sm">{{ hasLike(review.id)
+                  ? "Unlike" :
+                  "Like" }}</button>
+                <button v-if="isAdmin" @click="removeReview(review.id)" class="btn btn-danger btn-sm">Borrar</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -213,9 +231,11 @@ import { getTMDBTrailer } from "@/services/tmdbService";
 import { getMovies } from "@/services/movieService";
 import { getActors } from "@/services/actorService";
 import { getGenres } from "@/services/genreService";
-import { saveReview, subscribeReviews } from "@/services/reviewService";
+import { deleteReview, saveReview, subscribeReviews } from "@/services/reviewService";
+import { addLike, removeLike, subscribeLikes } from "@/services/likeService";
 // Store
 import { useLoginStore } from "@/stores/loginStore";
+import { useMoviesStore } from "@/stores/moviesStore";
 // Utils
 import { convertErrors } from "@/utils/errorMessages";
 
@@ -224,13 +244,18 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const loginStore = useLoginStore();
+const movieStore = useMoviesStore()
 
 // Lets
 let unsubscribe;
+let unsubscribeLikes;
+
+// Const 
+const hasLike = (reviewId) => movieStore.likesId.find(l => l.reviewId === reviewId)
 
 // Refs
 const newReview = ref("");
-
+const activeFilter = ref("newToOld")
 const rating = ref(5);
 
 const loading = ref(true);
@@ -247,6 +272,20 @@ const movie = ref(null);
 // Computed
 const user = computed(() => loginStore.user);
 const userProfile = computed(() => loginStore.userProfile);
+const isAdmin = computed(() => loginStore.role === 'admin')
+const sortedReviews = computed(() => {
+  const copy = [...reviews.value]
+
+  if (activeFilter.value === "newToOld") {
+    return copy.sort((a, b) => b.date?.toMillis() - a.date?.toMillis())
+  } else if (activeFilter.value === "oldToNew") {
+    return copy.sort((a, b) => a.date?.toMillis() - b.date?.toMillis())
+  } else if (activeFilter.value === "likes") {
+    return copy.sort((a, b) => (b.likesCount ?? 0) - (a.likesCount ?? 0))
+  } else {
+    return copy
+  }
+})
 
 // Lifecycle hooks
 
@@ -262,6 +301,12 @@ onMounted(async () => {
     reviews.value = data;
   });
 
+  if (loginStore.user) {
+    unsubscribeLikes = subscribeLikes(loginStore.user.uid, (likes) => {
+      movieStore.setLikes(likes)
+    })
+  }
+
   filteredActors.value =
     actors.value.filter((actor) =>
       movie.value.actors.includes(actor.id),
@@ -275,6 +320,7 @@ onMounted(async () => {
 // Method to unsubscribe when the component is unmounted
 onUnmounted(() => {
   if (unsubscribe) unsubscribe();
+  if (unsubscribeLikes) unsubscribeLikes();
 });
 
 // Methods
@@ -298,6 +344,13 @@ const loadData = async () => {
     loading.value = true;
     const movies = await getMovies();
     movie.value = movies.find((p) => p.id === route.params.id);
+
+    if (!movie.value) {
+      toast.error("La película no existe.");
+      router.push("/peliculas");
+      return;
+    }
+
     actors.value = await getActors();
     genres.value = await getGenres();
 
@@ -311,6 +364,12 @@ const loadData = async () => {
   }
 };
 
+const removeReview = async (id) => {
+  if (!confirm('¿Seguro/a de que desea eliminar esta reseña?')) return
+  await deleteReview(id)
+  toast.success("Reseña eliminado correctamente.")
+}
+
 /**
 * Method to publish a new review
 * First, it checks that the review is not empty, returning null if it is
@@ -318,7 +377,10 @@ const loadData = async () => {
 * In case of an error, a toast with the error will be shown to the user
 */
 const sendReview = async () => {
-  if (newReview.value.trim() === "") return;
+  if (newReview.value.trim() === "") {
+    toast.warning("Ingrese texto al campo de reseña.")
+    return
+  };
 
   try {
     await saveReview({
@@ -336,6 +398,22 @@ const sendReview = async () => {
     toast.error("Error al publicar la reseña: " + convertErrors(error.code));
   }
 };
+
+const toggleLike = async (reviewId) => {
+  const user = loginStore.user
+
+  if (!user) {
+    toast.warning("¡Debes iniciar sesión para darle me gusta a los mensajes!")
+    return
+  }
+  const like = hasLike(reviewId)
+
+  if (like) {
+    await removeLike(like.id, reviewId)
+  } else {
+    await addLike(user.uid, reviewId)
+  }
+}
 </script>
 
 <style scoped></style>

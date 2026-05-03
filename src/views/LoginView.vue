@@ -37,7 +37,7 @@
 // VUE Libraries
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 // Stores
 import { useLoginStore } from '@/stores/loginStore';
 // Services
@@ -50,6 +50,7 @@ import { convertErrors } from '@/utils/errorMessages';
 // Composables
 const loginStore = useLoginStore()
 const router = useRouter()
+const route = useRoute()
 const toast = useToast()
 
 // Refs
@@ -82,7 +83,8 @@ const logIn = async () => {
 
         loginStore.setUserProfile(profile)
 
-        router.push('/peliculas')
+        const redirect = route.query.redirect || '/peliculas'
+        router.push(redirect)
 
         toast.success(`Bienvenido: ${profile.name}`)
     } catch (error) {

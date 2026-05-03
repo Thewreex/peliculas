@@ -4,6 +4,8 @@ import {
   collection,
   addDoc,
   query,
+  doc,
+  deleteDoc,
   where,
   onSnapshot,
   orderBy,
@@ -22,7 +24,13 @@ export const saveReview = async (review) => {
   return await addDoc(reviewsCollection, {
     ...review,
     date: Timestamp.now(),
+    likesCount: 0,
   });
+};
+
+export const deleteReview = async (id) => {
+  const reviewRef = doc(db, "reviews", id);
+  return await deleteDoc(reviewRef);
 };
 
 /**

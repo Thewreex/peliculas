@@ -6,6 +6,7 @@ export const useMoviesStore = defineStore("movies", {
   state: () => ({
     favorites: [],
     favoritesId: [],
+    likesId: [],
     selectedMovie: null,
   }),
   // Methods
@@ -18,6 +19,10 @@ export const useMoviesStore = defineStore("movies", {
     setFavorites(favorites) {
       this.favorites = favorites;
       this.favoritesId = favorites.map((f) => f.movieId);
+    },
+
+    setLikes(likes) {
+      this.likesId = likes;
     },
   },
 });

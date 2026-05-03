@@ -37,6 +37,7 @@ export const useLoginStore = defineStore("login", {
       const moviesStore = useMoviesStore();
       moviesStore.favorites = [];
       moviesStore.favoritesId = [];
+      moviesStore.likesId = [];
     },
   },
 });
