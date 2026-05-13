@@ -16,7 +16,7 @@ import { useMoviesStore } from "./stores/moviesStore";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import "./assets/css/main.css";
+import "@/assets/scss/main.scss";
 
 const app = createApp(App);
 const pinia = createPinia();

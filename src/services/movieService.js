@@ -7,6 +7,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  arrayRemove,
 } from "firebase/firestore";
 // Utils
 import { convertErrors } from "@/utils/errorMessages";
@@ -68,4 +69,34 @@ export const updateMovie = async (id, movie) => {
 export const deleteMovie = async (id) => {
   const movieRef = doc(db, "movies", id);
   return await deleteDoc(movieRef);
+};
+
+/**
+ * Function that allows us to remove a specific actor from all movies.
+ * Used when deleting an actor.
+ * First, it retrieves all movies and filters them to find those containing the specific actor.
+ * Then, it uses a function to update the actor list for each of the filtered movies.
+ * Finally, it uses Promise.all to wait for all processes to complete.
+ */
+
+export const deleteActorFromMovies = async (actor, filteredMovies) => {
+  async function update(m) {
+    const ref = doc(db, "movies", m.id);
+    await updateDoc(ref, {
+      actors: arrayRemove(actor),
+    });
+  }
+
+  await Promise.all(filteredMovies.map((m) => update(m)));
+};
+
+export const deleteGenresFromMovies = async (genre, filteredMovies) => {
+  async function update(m) {
+    const ref = doc(db, "movies", m.id);
+    await updateDoc(ref, {
+      genres: arrayRemove(genre),
+    });
+  }
+
+  await Promise.all(filteredMovies.map((m) => update(m)));
 };

@@ -14,6 +14,8 @@ This component is the form where genres can be created/updated -->
             </div>
         </div>
         <button class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-danger" @click="cancelEdit" v-if="props.genre">Cancelar
+            Edicion</button>
     </form>
 </template>
 
@@ -22,6 +24,13 @@ This component is the form where genres can be created/updated -->
 import { ref, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
+import { useToast } from 'vue-toastification';
+// Services
+import { getGenres } from '@/services/genreService';
+
+// COMPOSABLES
+
+const toast = useToast()
 
 // PROPS
 
@@ -31,7 +40,7 @@ const props = defineProps({
 
 // EMITS (from genresView)
 
-const emit = defineEmits(['save'])
+const emit = defineEmits(['save', 'cancel'])
 
 // REFS
 
@@ -57,17 +66,29 @@ const v$ = useVuelidate(rules, { name })
 */
 const submitForm = async () => {
     const result = await v$.value.$validate()
-
     if (!result) return
 
+    const genres = await getGenres()
+
+    if (props.genre?.name !== name.value) {
+        if (genres.find(g => g.name.trim().toLowerCase() === name.value.trim().toLowerCase())) {
+            toast.warning("El género ingresado ya existe.")
+            return
+        }
+    }
 
     emit('save', {
         name: name.value
     })
 
     name.value = ""
-
     v$.value.$reset()
+}
+
+const cancelEdit = () => {
+    name.value = ""
+    v$.value.$reset()
+    emit('cancel')
 }
 
 // WATCHERS

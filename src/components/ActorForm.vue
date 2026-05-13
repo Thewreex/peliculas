@@ -12,7 +12,11 @@ This component is the form where actors can be created/updated -->
                 El nombre debe ser de al menos {{ v$.name.minLength.$params.min }} caracteres.
             </div>
         </div>
-        <button class="btn btn-primary">Guardar</button>
+        <div class="d-flex gap-3">
+            <button class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-danger" @click="cancelEdit" v-if="props.actor">Cancelar
+                Edicion</button>
+        </div>
     </form>
 </template>
 
@@ -21,8 +25,13 @@ This component is the form where actors can be created/updated -->
 import { ref, watch } from 'vue';
 import useVuelidate from '@vuelidate/core';
 import { minLength, required } from '@vuelidate/validators';
+import { useToast } from 'vue-toastification';
+// Services
+import { getActors } from '@/services/actorService';
 
 
+// COMPOSABLES
+const toast = useToast();
 
 // PROPS
 const props = defineProps({
@@ -31,7 +40,8 @@ const props = defineProps({
 
 // EMITS (from actorsView)
 
-const emit = defineEmits(['save'])
+const emit = defineEmits(['save', 'cancel'])
+
 
 // REFS
 const name = ref('')
@@ -55,8 +65,17 @@ const v$ = useVuelidate(rules, { name })
 
 const submitForm = async () => {
     const result = await v$.value.$validate()
-
     if (!result) return
+
+    const actors = await getActors()
+
+
+    if (props.actor?.name !== name.value) {
+        if (actors.find(a => a.name.trim().toLowerCase() === name.value.trim().toLowerCase())) {
+            toast.warning("El actor ingresado ya existe.")
+            return
+        }
+    }
 
     emit('save', {
         name: name.value
@@ -64,6 +83,12 @@ const submitForm = async () => {
 
     name.value = ""
     v$.value.$reset()
+}
+
+const cancelEdit = () => {
+    name.value = ""
+    v$.value.$reset()
+    emit('cancel')
 }
 
 // WATCHERS

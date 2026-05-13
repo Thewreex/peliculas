@@ -13,6 +13,8 @@ import {
 import { convertErrors } from "@/utils/errorMessages";
 // VUE Libraries
 import { useToast } from "vue-toastification";
+// Services
+import { deleteGenresFromMovies } from "./movieService";
 
 // Composables
 const toast = useToast();
@@ -71,7 +73,8 @@ export const updateGenre = async (id, genre) => {
 
 // Method to delete a genre of the database
 
-export const deleteGenre = async (id) => {
+export const deleteGenre = async (id, fmovies) => {
   const genreRef = doc(db, "genres", id);
-  return await deleteDoc(genreRef);
+  await deleteDoc(genreRef);
+  return await deleteGenresFromMovies(id, fmovies);
 };

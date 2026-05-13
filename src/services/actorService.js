@@ -13,6 +13,8 @@ import {
 import { convertErrors } from "@/utils/errorMessages";
 // VUE Libraries
 import { useToast } from "vue-toastification";
+// Services
+import { deleteActorFromMovies } from "./movieService";
 
 // Composables
 const toast = useToast();
@@ -73,7 +75,8 @@ export const updateActor = async (id, actor) => {
 
 // Method to delete a actor from the database
 
-export const deleteActor = async (id) => {
+export const deleteActor = async (id, fmovies) => {
   const actorRef = doc(db, "actors", id);
-  return await deleteDoc(actorRef);
+  await deleteDoc(actorRef);
+  return await deleteActorFromMovies(id, fmovies);
 };

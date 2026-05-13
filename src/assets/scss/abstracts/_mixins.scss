@@ -1,0 +1,21 @@
+@mixin underline-animation($color, $bottom) {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: $bottom;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: $color;
+        transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    &:hover::after {
+        width: 100%;
+        left: 0;
+    }
+}

@@ -8,6 +8,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
 
 // Favorites collection
@@ -34,15 +36,23 @@ export const subscribeFavorites = (userId, callback) => {
 // Method to add a new favorite movie to the database
 
 export const addFavorite = async (userId, movieId) => {
-  return await addDoc(favoritesCollection, {
+  const result = await addDoc(favoritesCollection, {
     userId,
     movieId,
   });
+
+  const moviesRef = doc(db, "movies", movieId);
+  await updateDoc(moviesRef, { favsCount: increment(1) });
+
+  return result;
 };
 
 // Method to remove a favorite in the database
 
-export const removeFavorite = async (favoriteId) => {
+export const removeFavorite = async (favoriteId, movieId) => {
   const favoriteRef = doc(db, "favorites", favoriteId);
-  return await deleteDoc(favoriteRef);
+  await deleteDoc(favoriteRef);
+
+  const moviesRef = doc(db, "movies", movieId);
+  await updateDoc(moviesRef, { favsCount: increment(-1) });
 };

@@ -1,9 +1,9 @@
 <!-- NAVBAR PAGE -->
 
 <template>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
+    <nav class="header navbar navbar-expand-lg " data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Películas</a>
+            <router-link to="/peliculas" class="header-title navbar-brand" href="#">Filmados!</router-link>
 
             <!-- HAMBURGER MENU MODE FOR MOBILE DEVICES -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -13,11 +13,11 @@
 
             <!-- LINK MENU FOR NAVIGATING BETWEEN DIFFERENT ROUTES -->
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ms-auto">
+                <div class="header-links navbar-nav ms-auto">
                     <router-link class="nav-link active" to="/peliculas">Películas</router-link>
-                    <router-link class="nav-link active" to="/actores">Actores</router-link>
-                    <router-link class="nav-link active" to="/generos">Géneros</router-link>
-                    <router-link class="nav-link active" to="/ingreso">Ingresar</router-link>
+                    <router-link v-if="isAdmin" class="nav-link active" to="/actores">Actores</router-link>
+                    <router-link v-if="isAdmin" class="nav-link active" to="/generos">Géneros</router-link>
+                    <router-link v-if="isAdmin" class="nav-link active" to="/ingreso">Ingresar</router-link>
 
                     <!-- No User links -->
                     <template v-if="!user">
@@ -30,7 +30,8 @@
                     <!-- With user links -->
                     <template v-else>
                         <span class="nav-link me-3">Bienvenido: {{ name }}</span>
-                        <button @click="logOut" class="btn btn-outline-light">Cerrar sesión</button>
+                        <button @click="logOut" to="/peliculas" class="btn btn-outline-light">Cerrar
+                            sesión</button>
                     </template>
                 </div>
             </div>
@@ -45,7 +46,11 @@ import { computed } from 'vue';
 import { useLoginStore } from '@/stores/loginStore';
 // SERVICES
 import { logout } from '@/services/authService';
+import { useRouter } from 'vue-router';
 
+// COMPOSABLES
+
+const router = useRouter()
 
 // VARIABLES
 const loginStore = useLoginStore()
@@ -53,6 +58,11 @@ const user = computed(() => loginStore.user)
 const name = computed(() => {
     return loginStore.userProfile?.name || ''
 })
+
+// COMPUTED
+
+const isAdmin = computed(() => loginStore.role === 'admin')
+
 
 //METHODS
 
@@ -64,7 +74,27 @@ const logOut = async () => {
     if (!confirm('¿Está seguro de que desea cerrar sesión?')) return
     await logout()
     loginStore.logout()
+    router.push('/peliculas')
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@use '@/assets/scss/abstracts/variables' as *;
+@use '@/assets/scss/abstracts/mixins' as *;
+
+.header {
+    background-color: $secondary-color;
+}
+
+.header-title {
+    color: $text-light;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-color: $primary-color;
+}
+
+.header-links a {
+    color: $text-light;
+    @include underline-animation($text-light, 5px);
+}
+</style>

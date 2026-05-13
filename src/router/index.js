@@ -49,10 +49,12 @@ const router = createRouter({
     {
       path: "/registrar",
       component: RegisterView,
+      meta: { guestOnly: true },
     },
     {
       path: "/login",
       component: LoginView,
+      meta: { guestOnly: true },
     },
   ],
 });
@@ -74,6 +76,10 @@ router.beforeEach(async (to) => {
   if (user && !rol) {
     rol = await getUserRole(user.uid);
     loginStore.setRole(rol);
+  }
+
+  if (to.meta.guestOnly && user) {
+    return "/peliculas";
   }
 
   if (to.meta.requiresAuth && !user) {

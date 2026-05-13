@@ -105,7 +105,7 @@ const toggleFavorite = async () => {
     if (isFavorite.value) {
         const favorite = moviesStore.favorites.find(f => f.movieId === props.movie.id)
 
-        if (favorite) await removeFavorite(favorite.id)
+        if (favorite) await removeFavorite(favorite.id, props.movie.id)
     } else {
         await addFavorite(user.uid, props.movie.id)
     }

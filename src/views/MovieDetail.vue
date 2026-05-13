@@ -88,6 +88,9 @@
             </p>
           </li>
         </ul>
+        <!-- Movie Runtine -->
+        <h5 class="fw-bold">Cantidad de favoritos</h5>
+        <p>{{ movie.favsCount }}</p>
         <!-- Movie Synopsis -->
         <h5 class="fw-bold">Sinopsis</h5>
         <p>{{ movie.synopsis }}</p>
@@ -273,6 +276,12 @@ const movie = ref(null);
 const user = computed(() => loginStore.user);
 const userProfile = computed(() => loginStore.userProfile);
 const isAdmin = computed(() => loginStore.role === 'admin')
+
+/**
+ * Function to filter reviews
+ * First, it creates a copy of all the reviews at the time the function is called
+ * Then, it checks the type of filter to apply using an if statement and returns the sorted list of reviews
+ */
 const sortedReviews = computed(() => {
   const copy = [...reviews.value]
 
@@ -377,6 +386,12 @@ const removeReview = async (id) => {
 * In case of an error, a toast with the error will be shown to the user
 */
 const sendReview = async () => {
+
+  if (reviews.value.find(u => u.userId === user.value.uid)) {
+    toast.warning("Ya has escrito una reseña en esta pelicula.")
+    return
+  }
+
   if (newReview.value.trim() === "") {
     toast.warning("Ingrese texto al campo de reseña.")
     return
@@ -398,6 +413,13 @@ const sendReview = async () => {
     toast.error("Error al publicar la reseña: " + convertErrors(error.code));
   }
 };
+
+/**
+ * Function to add or remove a like from a review
+ * First, it checks if there is an active user, and if not, it displays an error toast
+ * Then, it uses the hasLike method to check whether the review already has a like
+ * If it does, it removes the like, and if not, it adds it
+ */
 
 const toggleLike = async (reviewId) => {
   const user = loginStore.user
